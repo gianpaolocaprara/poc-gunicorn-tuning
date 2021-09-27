@@ -1,0 +1,28 @@
+# ./sync-gunicorn.yml
+version: "3.7"
+services:
+  flask_app_gunicorn:
+    init: true
+    build:
+      context: ./flask_app
+      dockerfile: Dockerfile
+    environment:
+      - PORT_APP=3000
+      - PORT_API=4000
+      - WORKERS=8
+      - THREADS=50
+      - WORKER_CONNECTIONS=1000
+      - TIMEOUT=30
+      - KEEP_ALIVE=2
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      - slow_api
+
+  slow_api:
+    init: true
+    build: ./slow_api
+    environment:
+      - PORT=4000
+    expose:
+      - "4000"
