@@ -6,7 +6,7 @@ services:
     build:
       context: ./flask_app
       dockerfile: Dockerfile
-    command: ["gunicorn","--workers","1","--timeout","30","--keep-alive","2","--bind","0.0.0.0:3000","--worker-class","gevent","mongo_app:app"]
+    command: ["gunicorn","--workers","1","--timeout","30","--keep-alive","2","--bind","0.0.0.0:3000","--worker-class","gevent","sql_app:app"]
     environment:
       - DB_HOST=mongodb
       - DB_PORT=27017
@@ -15,11 +15,9 @@ services:
     depends_on:
       - mongo
 
-  mongo:
-    image: mongo:4.0
+  postgres:
+    image: postgres:13.4-alpine
     ports:
-      - "27017:27017"
+      - "5432:5432"
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=root
-#      - MONGO_INITDB_DATABASE=test
+      POSTGRES_PASSWORD: root

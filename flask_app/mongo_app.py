@@ -1,20 +1,17 @@
-import os
-
 import pymongo
+from bson import ObjectId
 from flask import Flask
 
-app = Flask(__name__)
-client = pymongo.MongoClient(host=os.environ["DB_HOST"],
-                             port=int(os.environ["DB_PORT"]),
-                             username="root",
-                             password="root")
 
+app = Flask(__name__)
+
+client = pymongo.MongoClient("mongodb://root:root@mongo:27017/")
 db = client['test']
 
 
 @app.route('/')
 def index():
     collection = db.get_collection("test")
-    inserted_id = collection.insert_one({"test": "1"}).inserted_id
-    inserted_document = collection.find_one({"_id": inserted_id})
-    return inserted_document
+    inserted_id: ObjectId = collection.insert_one({"test": "1"}).inserted_id
+    inserted_document = collection.find_one({"_id": str(inserted_id)})
+    return "ok"
