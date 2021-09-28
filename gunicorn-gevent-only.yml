@@ -1,18 +1,14 @@
-# ./async-gevent-gunicorn.yml
+# ./gunicorn-gevent-only.yml
 version: "3.7"
 services:
-  flask_app:
+  flask_app_gunicorn:
     init: true
     build:
       context: ./flask_app
-      dockerfile: Dockerfile-gevent-gunicorn
+      dockerfile: Dockerfile
+    command: ["gunicorn","--workers","1","--timeout","30","--keep-alive","2","--bind","0.0.0.0:3000","--worker-class","gevent","app:app"]
     environment:
-      - PORT_APP=3000
       - PORT_API=4000
-      - WORKERS=1
-      - WORKER_CONNECTIONS=1000
-      - TIMEOUT=30
-      - KEEP_ALIVE=2
     ports:
       - "127.0.0.1:3000:3000"
     depends_on:

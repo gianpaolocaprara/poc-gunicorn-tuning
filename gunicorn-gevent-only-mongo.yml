@@ -1,0 +1,28 @@
+# ./gunicorn-gevent-only.yml
+version: "3.7"
+services:
+  flask_app_gunicorn:
+    init: true
+    build:
+      context: ./flask_app
+      dockerfile: Dockerfile
+    command: ["gunicorn","--workers","1","--timeout","30","--keep-alive","2","--bind","0.0.0.0:3000","--worker-class","gevent","mongo_app:app"]
+    environment:
+      - DB_HOST=mongodb
+      - DB_PORT=27017
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      - mongodb
+
+  mongodb:
+    image: docker.chili.tv/middleware/mongodb:4.0
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d
+    entrypoint: "/docker-entrypoint-initdb.d/entrypoint.sh"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=root
+      - MONGO_INITDB_DATABASE=test
